@@ -36,6 +36,5 @@ cp /vagrant/cassandra.yaml /etc/cassandra
 
 echo "Restarting Cassandra..."
 service cassandra start
-service datastax-agent restart
 
 echo "Vagrant provisioning complete"
