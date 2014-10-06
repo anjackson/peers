@@ -1,0 +1,37 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+VAGRANTFILE_API_VERSION = "2"
+
+CFG_MEMSIZE = "1500"    # max memory for each VM
+SERVER_COUNT = 1
+
+
+# Configure VM servers
+servers = []
+(0..SERVER_COUNT-1).each do |i|
+  name = 'peers-node' + (1 + i).to_s
+  servers << {'name' => name}
+end
+
+# Configure each machine:
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+  config.vm.box = "hashicorp/precise64"
+  servers.each do |server|
+    config.vm.define server['name'] do |config2|
+      config2.vm.hostname = server['name']
+
+      #config2.vm.provision :shell, :inline => node_script
+      #config.vm.provision "shell", path: "provision-cassandra.sh"
+
+      config2.vm.provider "vmware_fusion" do |v|
+        v.vmx["memsize"]  = CFG_MEMSIZE
+      end
+      config2.vm.provider :virtualbox do |v|
+        v.name = server['name']
+        v.customize ["modifyvm", :id, "--memory", CFG_MEMSIZE]
+      end
+
+    end
+  end
+end
